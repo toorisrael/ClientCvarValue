@@ -126,8 +126,9 @@ void ClientCvarValue::OnClientConnected(CPlayerSlot nSlot, const char* pszName, 
 
 void ClientCvarValue::OnClientDisconnect(CPlayerSlot nSlot, ENetworkDisconnectionReason reason, const char* pszName, uint64 xuid, const char* pszNetworkID)
 {
-	m_ClientCvarData[nSlot.Get()].Reset();
-
+	if(xuid)
+		m_ClientCvarData[nSlot.Get()].Reset();
+		
 	RETURN_META(MRES_IGNORED);
 }
 
@@ -145,9 +146,10 @@ int ClientCvarValue::SendCvarValueQueryToClient(CPlayerSlot nSlot, const char* p
 		msg->set_cookie(iQueryCvarCookie);
 		msg->set_cvar_name(pszCvarName);
 
-		pNetChannel->SendNetMessage(pMsg, msg, BUF_DEFAULT);
+		pNetChannel->SendNetMessage(msg, BUF_DEFAULT);
 		
-		pMsg->DeallocateMessage(msg);
+		//pMsg->DeallocateMessage(msg);
+		delete msg;
 		return iQueryCvarCookie;
 	}
 
